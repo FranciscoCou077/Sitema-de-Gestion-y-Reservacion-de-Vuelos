@@ -246,10 +246,10 @@ java -cp build/classes aeroviajes.Main
 
 ## Equipo
 
-| Integrante | Rol | GitHub |
-|------------|-----|--------|
-| _(Tu nombre)_ | Modelo, persistencia, GUI (login/admin), reporte | [@usuario](https://github.com/usuario) |
-| Ernesto _(apellido)_ | Servicios, patrones, hilos, GUI (cliente), UML | [@ernesto](https://github.com/ernesto) |
+| Integrante | GitHub |
+|------------|--------|
+| **Francisco José Coutiño Morales** | [Mi GitHub](https://github.com/FranciscoCou077) |
+| **Ernesto Flamenco Villaseñor** |  [Su GitHub](https://github.com/ernestogoretzka) |
 
 ---
 
@@ -257,7 +257,7 @@ java -cp build/classes aeroviajes.Main
 
 Proyecto final de la asignatura **Programación Orientada a Objetos**.
 
-- **Periodo:** Primavera 2026
+- **Periodo:** Semestre 2026-2
 - **Modalidad:** Proyecto en equipo (2 integrantes)
 - **Objetivo:** Integrar la totalidad de conceptos del curso en una aplicación real, completa y profesional.
 
