@@ -1,6 +1,6 @@
 <div align="center">
 
-# ✈️ Aeroviajes
+# Aeroviajes
 
 ### Sistema de gestión y reservación de vuelos
 
