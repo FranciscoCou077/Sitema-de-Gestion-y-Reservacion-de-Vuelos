@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Maneja el registro, login y eliminacion de usuarios.
@@ -23,7 +24,7 @@ public class GestorUsuarios {
     }
 
     /**
-     * Registra un nuevo cliente en el sistema.
+     * Registra un nuevo cliente. Genera un ID unico automaticamente.
      * Lanza UsuarioYaExiste si el correo ya esta en uso.
      */
     public void registrarCliente(String nombre, String apellido,
@@ -32,14 +33,15 @@ public class GestorUsuarios {
         if (usuarios.containsKey(correo)) {
             throw new UsuarioYaExiste(correo);
         }
-        Cliente cliente = new Cliente(nombre, apellido, correo, contrasena);
+        String id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        Cliente cliente = new Cliente(id, nombre, apellido, correo, contrasena);
         usuarios.put(correo, cliente);
         System.out.println("[GestorUsuarios] Cliente registrado: " + correo);
     }
 
     /**
-     * Valida las credenciales de un usuario.
-     * Devuelve el objeto Usuario si todo es correcto.
+     * Valida las credenciales. Usa validarContrasena() de Usuario
+     * para no exponer la contrasena directamente.
      */
     public Usuario iniciarSesion(String correo, String contrasena)
             throws UsuarioNoEncontrado, Autenticacion {
@@ -47,14 +49,14 @@ public class GestorUsuarios {
         if (u == null) {
             throw new UsuarioNoEncontrado(correo);
         }
-        if (!u.getContrasena().equals(contrasena)) {
+        if (!u.validarContrasena(contrasena)) {
             throw new Autenticacion("Contrasena incorrecta para: " + correo);
         }
         return u;
     }
 
     /**
-     * Elimina un usuario del sistema (solo lo usa el admin).
+     * Elimina un usuario del sistema (solo lo usa el administrador).
      */
     public void eliminarUsuario(String correo) throws UsuarioNoEncontrado {
         if (!usuarios.containsKey(correo)) {

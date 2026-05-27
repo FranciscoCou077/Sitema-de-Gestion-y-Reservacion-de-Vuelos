@@ -3,8 +3,8 @@ package aeroviajes.ui;
 import aeroviajes.exception.AsientoNoDisponible;
 import aeroviajes.exception.PagoInvalido;
 import aeroviajes.exception.VueloNoDisponible;
+import aeroviajes.model.Cliente;
 import aeroviajes.model.Reserva;
-import aeroviajes.model.Usuario;
 import aeroviajes.patterns.strategy.IValidadorPago;
 import aeroviajes.patterns.strategy.ValidadorTarjetaCredito;
 import aeroviajes.patterns.strategy.ValidadorTarjetaDebito;
@@ -29,7 +29,9 @@ public class PanelCompra extends JPanel {
 
     private final VentanaPrincipal ventana;
     private final GestorReservas gestorReservas;
-    private final Usuario clienteActual;
+
+    // ID del vuelo que se va a comprar (se asigna antes de mostrar este panel)
+    private String idVueloSeleccionado;
 
     private JRadioButton rbCredito;
     private JRadioButton rbDebito;
@@ -40,10 +42,9 @@ public class PanelCompra extends JPanel {
     private JButton btnConfirmar;
     private JButton btnCancelar;
 
-    public PanelCompra(VentanaPrincipal ventana, GestorReservas gestorReservas, Usuario clienteActual) {
+    public PanelCompra(VentanaPrincipal ventana, GestorReservas gestorReservas) {
         this.ventana = ventana;
         this.gestorReservas = gestorReservas;
-        this.clienteActual = clienteActual;
         initComponentes();
     }
 
@@ -53,7 +54,6 @@ public class PanelCompra extends JPanel {
 
         JPanel formulario = new JPanel(new GridLayout(6, 2, 8, 8));
 
-        // Tipo de tarjeta
         formulario.add(new JLabel("Tipo de tarjeta:"));
         JPanel panelTipo = new JPanel();
         rbCredito = new JRadioButton("Credito", true);
@@ -65,23 +65,19 @@ public class PanelCompra extends JPanel {
         panelTipo.add(rbDebito);
         formulario.add(panelTipo);
 
-        // Numero de tarjeta
         formulario.add(new JLabel("Numero de tarjeta:"));
         txtNumeroTarjeta = new JTextField();
         formulario.add(txtNumeroTarjeta);
 
-        // CVV o NIP segun tipo
         formulario.add(new JLabel("CVV / NIP:"));
         txtCvvNip = new JPasswordField();
         formulario.add(txtCvvNip);
 
-        // Fecha de expiracion (solo credito)
         lblFechaExp = new JLabel("Fecha de expiracion:");
         formulario.add(lblFechaExp);
         txtFechaExp = new JTextField();
         formulario.add(txtFechaExp);
 
-        // Mostrar u ocultar campo de fecha segun tipo de tarjeta
         rbDebito.addActionListener(e -> {
             lblFechaExp.setVisible(false);
             txtFechaExp.setVisible(false);
@@ -93,21 +89,36 @@ public class PanelCompra extends JPanel {
 
         add(formulario, BorderLayout.CENTER);
 
-        // Botones
         JPanel panelBotones = new JPanel();
         btnConfirmar = new JButton("Confirmar compra");
         btnCancelar = new JButton("Cancelar");
         btnConfirmar.addActionListener(e -> procesarCompra());
-        btnCancelar.addActionListener(e -> ventana.mostrarPanel("listaVuelos"));
+        btnCancelar.addActionListener(e -> ventana.mostrarPanel(VentanaPrincipal.P_CLIENTE));
         panelBotones.add(btnConfirmar);
         panelBotones.add(btnCancelar);
         add(panelBotones, BorderLayout.SOUTH);
     }
 
+    /** El panel de lista de vuelos llama este metodo antes de navegar aqui. */
+    public void setIdVueloSeleccionado(String idVuelo) {
+        this.idVueloSeleccionado = idVuelo;
+    }
+
     private void procesarCompra() {
+        if (idVueloSeleccionado == null) {
+            JOptionPane.showMessageDialog(this, "No hay vuelo seleccionado.");
+            return;
+        }
+
+        // El usuario actual debe ser Cliente para poder reservar
+        if (!(ventana.getUsuarioActual() instanceof Cliente)) {
+            JOptionPane.showMessageDialog(this, "Solo los clientes pueden comprar boletos.");
+            return;
+        }
+        Cliente cliente = (Cliente) ventana.getUsuarioActual();
+
         String numero = txtNumeroTarjeta.getText().trim();
         String cvvNip = new String(txtCvvNip.getPassword()).trim();
-        String idVuelo = ventana.getVueloSeleccionado();
 
         // Strategy: el validador se elige segun lo que marco el cliente
         IValidadorPago validador;
@@ -118,12 +129,10 @@ public class PanelCompra extends JPanel {
         }
 
         try {
-            Reserva reserva = gestorReservas.crearReserva(
-                    clienteActual.getCorreo(), idVuelo, validador);
+            Reserva reserva = gestorReservas.crearReserva(cliente, idVueloSeleccionado, validador);
             JOptionPane.showMessageDialog(this,
-                "Reserva confirmada. Tu ticket se esta generando...\nID reserva: "
-                + reserva.getIdReserva());
-            ventana.mostrarPanel("misReservas");
+                "Reserva confirmada. Tu ticket se esta generando...\nID: " + reserva.getId());
+            ventana.mostrarPanel(VentanaPrincipal.P_CLIENTE);
         } catch (PagoInvalido ex) {
             JOptionPane.showMessageDialog(this, "Error de pago: " + ex.getMessage(),
                 "Pago invalido", JOptionPane.ERROR_MESSAGE);

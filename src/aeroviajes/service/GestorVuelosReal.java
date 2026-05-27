@@ -24,7 +24,6 @@ public class GestorVuelosReal implements IGestorVuelos {
 
     @Override
     public void agregarVuelo(Vuelo vuelo) throws Autenticacion {
-        // La validacion de permisos la hace el proxy antes de llegar aqui
         vuelos.put(vuelo.getId(), vuelo);
         System.out.println("[GestorVuelos] Vuelo agregado: " + vuelo.getId());
     }
@@ -51,7 +50,7 @@ public class GestorVuelosReal implements IGestorVuelos {
     public List<Vuelo> obtenerVuelosDisponibles() {
         List<Vuelo> disponibles = new ArrayList<>();
         for (Vuelo v : vuelos.values()) {
-            if (v.getAsientosDisponibles() > 0) {
+            if (v.hayDisponibilidad()) {
                 disponibles.add(v);
             }
         }
@@ -61,10 +60,10 @@ public class GestorVuelosReal implements IGestorVuelos {
     @Override
     public void reservarAsiento(String idVuelo) throws VueloNoDisponible, AsientoNoDisponible {
         Vuelo v = buscarVuelo(idVuelo);
-        if (v.getAsientosDisponibles() <= 0) {
+        if (!v.hayDisponibilidad()) {
             throw new AsientoNoDisponible(idVuelo);
         }
-        v.setAsientosDisponibles(v.getAsientosDisponibles() - 1);
+        v.reservarAsiento(); // El metodo de Vuelo ya decrementa internamente
     }
 
     public Map<String, Vuelo> getVuelos() {

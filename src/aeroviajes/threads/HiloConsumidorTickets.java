@@ -18,7 +18,7 @@ public class HiloConsumidorTickets extends Thread {
         this.cola = cola;
         this.gestorTickets = gestorTickets;
         this.corriendo = true;
-        setDaemon(true); // Se detiene automaticamente cuando cierra la app
+        setDaemon(true);
         setName("HiloConsumidorTickets");
     }
 
@@ -27,8 +27,8 @@ public class HiloConsumidorTickets extends Thread {
         System.out.println("[HiloConsumidor] Iniciado, esperando reservas...");
         while (corriendo) {
             try {
-                Reserva reserva = cola.tomar(); // Espera si la cola esta vacia
-                System.out.println("[HiloConsumidor] Procesando reserva de: " + reserva.getIdCliente());
+                Reserva reserva = cola.tomar();
+                System.out.println("[HiloConsumidor] Procesando reserva: " + reserva.getId());
                 gestorTickets.generarTicket(reserva);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

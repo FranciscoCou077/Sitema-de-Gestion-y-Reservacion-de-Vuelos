@@ -20,7 +20,7 @@ public class ProductorTickets implements IObservadorReserva {
     public void onReservaConfirmada(Reserva reserva) {
         try {
             cola.agregar(reserva);
-            System.out.println("[ProductorTickets] Reserva en cola: " + reserva.getIdCliente());
+            System.out.println("[ProductorTickets] Reserva en cola: " + reserva.getId());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.err.println("[ProductorTickets] Hilo interrumpido al agregar a la cola.");

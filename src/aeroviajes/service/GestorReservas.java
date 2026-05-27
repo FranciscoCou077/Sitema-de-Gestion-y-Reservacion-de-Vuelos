@@ -3,12 +3,14 @@ package aeroviajes.service;
 import aeroviajes.exception.AsientoNoDisponible;
 import aeroviajes.exception.PagoInvalido;
 import aeroviajes.exception.VueloNoDisponible;
+import aeroviajes.model.Cliente;
 import aeroviajes.model.Reserva;
 import aeroviajes.model.Vuelo;
 import aeroviajes.patterns.observer.NotificadorReservas;
 import aeroviajes.patterns.strategy.IValidadorPago;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Coordina todo el proceso de compra de un boleto:
@@ -31,13 +33,13 @@ public class GestorReservas {
      * Crea una reserva. El validador de pago se inyecta desde afuera
      * (tarjeta de credito o debito) sin cambiar este metodo.
      */
-    public Reserva crearReserva(String idCliente, String idVuelo,
+    public Reserva crearReserva(Cliente cliente, String idVuelo,
                                  IValidadorPago validadorPago)
             throws VueloNoDisponible, AsientoNoDisponible, PagoInvalido {
 
         // 1. Verificar que el vuelo existe y tiene asientos
         Vuelo vuelo = gestorVuelos.buscarVuelo(idVuelo);
-        if (vuelo.getAsientosDisponibles() <= 0) {
+        if (!vuelo.hayDisponibilidad()) {
             throw new AsientoNoDisponible(idVuelo);
         }
 
@@ -47,20 +49,25 @@ public class GestorReservas {
         // 3. Descontar el asiento del vuelo
         gestorVuelos.reservarAsiento(idVuelo);
 
-        // 4. Crear la reserva y registrarla
-        Reserva reserva = new Reserva(idCliente, vuelo);
+        // 4. Generar ID de reserva y asiento asignado
+        String idReserva = "R-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+        String asiento = "A" + (vuelo.getAsientosTotales() - vuelo.getAsientosDisponibles());
+
+        // 5. Crear la reserva y confirmarla
+        Reserva reserva = new Reserva(idReserva, vuelo, cliente, asiento);
+        reserva.confirmar();
         reservas.add(reserva);
 
-        // 5. Notificar: esto dispara la generacion del ticket en segundo plano
+        // 6. Notificar: esto dispara la generacion del ticket en segundo plano
         notificador.notificar(reserva);
 
         return reserva;
     }
 
-    public List<Reserva> obtenerReservasPorCliente(String idCliente) {
+    public List<Reserva> obtenerReservasPorCliente(String correoCliente) {
         List<Reserva> resultado = new ArrayList<>();
         for (Reserva r : reservas) {
-            if (r.getIdCliente().equals(idCliente)) {
+            if (r.getCliente().getCorreo().equals(correoCliente)) {
                 resultado.add(r);
             }
         }

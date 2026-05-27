@@ -24,20 +24,9 @@ public class GestorTickets {
     }
 
     private void guardarEnArchivo(Ticket ticket) {
-        String nombreArchivo = CARPETA_TICKETS + ticket.getCodigo() + ".txt";
+        String nombreArchivo = CARPETA_TICKETS + ticket.getCodigoTicket() + ".txt";
         try (PrintWriter pw = new PrintWriter(new FileWriter(nombreArchivo))) {
-            pw.println("============================================");
-            pw.println("        AEROVIAJES  -  BOLETO DE VUELO     ");
-            pw.println("============================================");
-            pw.println("Codigo  : " + ticket.getCodigo());
-            pw.println("Cliente : " + ticket.getReserva().getIdCliente());
-            pw.println("Vuelo   : " + ticket.getReserva().getVuelo().getId());
-            pw.println("Origen  : " + ticket.getReserva().getVuelo().getOrigen().getCiudad());
-            pw.println("Destino : " + ticket.getReserva().getVuelo().getDestino().getCiudad());
-            pw.println("Fecha   : " + ticket.getReserva().getVuelo().getFechaSalida());
-            pw.println("Precio  : $" + ticket.getReserva().getVuelo().getPrecio());
-            pw.println("============================================");
-            pw.println("   Gracias por volar con Aeroviajes :)     ");
+            pw.print(ticket.generarContenido()); // Ticket ya tiene el formato listo
             System.out.println("[GestorTickets] Ticket guardado: " + nombreArchivo);
         } catch (IOException e) {
             System.err.println("[GestorTickets] Error al guardar ticket: " + e.getMessage());

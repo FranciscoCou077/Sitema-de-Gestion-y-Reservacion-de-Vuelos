@@ -1,12 +1,13 @@
 package aeroviajes.ui;
 
+import aeroviajes.model.Cliente;
 import aeroviajes.model.Reserva;
-import aeroviajes.model.Usuario;
 import aeroviajes.service.GestorReservas;
-import java.util.List;
 import java.awt.BorderLayout;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -14,25 +15,23 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 /**
- * Muestra el historial de reservas del cliente.
- * Permite seleccionar una para ver su ticket.
+ * Muestra el historial de reservas del cliente actual.
  */
 public class PanelMisReservas extends JPanel {
 
     private final VentanaPrincipal ventana;
     private final GestorReservas gestorReservas;
-    private final Usuario clienteActual;
+    private final PanelTicket panelTicket;
 
     private JTable tablaReservas;
     private DefaultTableModel modeloTabla;
-    private JButton btnVerTicket;
-    private JButton btnRegresar;
+    private List<Reserva> reservasActuales;
 
     public PanelMisReservas(VentanaPrincipal ventana, GestorReservas gestorReservas,
-                             Usuario clienteActual) {
+                             PanelTicket panelTicket) {
         this.ventana = ventana;
         this.gestorReservas = gestorReservas;
-        this.clienteActual = clienteActual;
+        this.panelTicket = panelTicket;
         initComponentes();
     }
 
@@ -40,7 +39,7 @@ public class PanelMisReservas extends JPanel {
         setLayout(new BorderLayout(10, 10));
         add(new JLabel("Mis reservas", JLabel.CENTER), BorderLayout.NORTH);
 
-        String[] columnas = {"ID Reserva", "Vuelo", "Origen", "Destino", "Fecha", "Precio"};
+        String[] columnas = {"ID Reserva", "Vuelo", "Origen", "Destino", "Fecha", "Asiento"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -52,31 +51,30 @@ public class PanelMisReservas extends JPanel {
         add(new JScrollPane(tablaReservas), BorderLayout.CENTER);
 
         JPanel panelBotones = new JPanel();
-        btnVerTicket = new JButton("Ver ticket");
-        btnRegresar = new JButton("Regresar");
-
+        JButton btnVerTicket = new JButton("Ver ticket");
+        JButton btnRegresar = new JButton("Regresar");
         btnVerTicket.addActionListener(e -> verTicketSeleccionado());
-        btnRegresar.addActionListener(e -> ventana.mostrarPanel("cliente"));
-
+        btnRegresar.addActionListener(e -> ventana.mostrarPanel(VentanaPrincipal.P_CLIENTE));
         panelBotones.add(btnVerTicket);
         panelBotones.add(btnRegresar);
         add(panelBotones, BorderLayout.SOUTH);
-
-        cargarReservas();
     }
 
     public void cargarReservas() {
         modeloTabla.setRowCount(0);
-        List<Reserva> reservas = gestorReservas.obtenerReservasPorCliente(
-                clienteActual.getCorreo());
-        for (Reserva r : reservas) {
+        if (!(ventana.getUsuarioActual() instanceof Cliente)) return;
+
+        String correo = ventana.getUsuarioActual().getCorreo();
+        reservasActuales = gestorReservas.obtenerReservasPorCliente(correo);
+
+        for (Reserva r : reservasActuales) {
             modeloTabla.addRow(new Object[]{
-                r.getIdReserva(),
+                r.getId(),
                 r.getVuelo().getId(),
                 r.getVuelo().getOrigen().getCiudad(),
                 r.getVuelo().getDestino().getCiudad(),
-                r.getVuelo().getFechaSalida(),
-                "$" + r.getVuelo().getPrecio()
+                r.getVuelo().getFechaFormateada(),
+                r.getAsientoAsignado()
             });
         }
     }
@@ -84,12 +82,11 @@ public class PanelMisReservas extends JPanel {
     private void verTicketSeleccionado() {
         int fila = tablaReservas.getSelectedRow();
         if (fila == -1) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Selecciona una reserva primero.");
+            JOptionPane.showMessageDialog(this, "Selecciona una reserva primero.");
             return;
         }
-        String idReserva = (String) modeloTabla.getValueAt(fila, 0);
-        ventana.setReservaSeleccionada(idReserva);
+        Reserva reserva = reservasActuales.get(fila);
+        panelTicket.mostrarReserva(reserva); // Le pasamos la reserva directamente
         ventana.mostrarPanel("ticket");
     }
 }
