@@ -1,63 +1,66 @@
 package aeroviajes;
 
-import aeroviajes.model.Aerolinea;
-import aeroviajes.model.Aeropuerto;
-import aeroviajes.model.Cliente;
-import aeroviajes.model.Reserva;
-import aeroviajes.model.Ticket;
-import aeroviajes.model.Vuelo;
-import java.time.LocalDateTime;
+import aeroviajes.model.Administrador;
+import aeroviajes.model.Usuario;
+import aeroviajes.patterns.factory.UsuarioFactory;
+import aeroviajes.persistence.RepositorioUsuarios;
+import aeroviajes.ui.VentanaPrincipal;
+import aeroviajes.util.Constantes;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 /**
  * Punto de entrada del sistema Aeroviajes.
  *
- * Por ahora ejecuta una prueba rapida (smoke test) del paquete model
- * para verificar que las entidades se construyen y relacionan correctamente.
- * Se sustituira por el lanzamiento de la interfaz grafica (VentanaPrincipal)
- * cuando este lista.
+ * Realiza una inicializacion minima antes de lanzar la interfaz grafica:
+ *  1. Configura el Look and Feel del sistema operativo (apariencia nativa).
+ *  2. Si no existe ningun administrador en el repositorio, crea uno por
+ *     defecto con las credenciales definidas en Constantes (para que el
+ *     sistema sea utilizable en su primera ejecucion).
+ *  3. Lanza la VentanaPrincipal en el hilo de eventos de Swing (EDT).
  *
  * @author Equipo Aeroviajes
  */
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("=== Smoke test del paquete model ===\n");
-
-        // Flyweights: aeropuertos y aerolinea compartidos
-        Aeropuerto mex = new Aeropuerto("MEX", "Benito Juarez", "Ciudad de Mexico", "Mexico");
-        Aeropuerto cun = new Aeropuerto("CUN", "Internacional de Cancun", "Cancun", "Mexico");
-        Aerolinea amx = new Aerolinea("AM", "Aeromexico");
-
-        // Vuelo con estado extrinseco propio
-        Vuelo vuelo = new Vuelo("AM123", mex, cun, amx,
-                LocalDateTime.of(2026, 6, 15, 8, 30), 2450.00, 150);
-
-        // Cliente
-        Cliente cliente = new Cliente("C001", "Francisco", "Cou",
-                "francisco@correo.com", "Segura123");
-
-        System.out.println(vuelo);
-        System.out.println(cliente);
-        System.out.println();
-
+        // 1) Look and Feel del sistema (apariencia nativa de Windows / macOS / Linux)
         try {
-            // Flujo basico de reserva
-            vuelo.reservarAsiento();
-            Reserva reserva = new Reserva("R001", vuelo, cliente, "12A");
-            reserva.confirmar();
-            cliente.agregarReserva(reserva);
-
-            // Generacion del ticket
-            Ticket ticket = new Ticket("TICKET-0001", reserva);
-            System.out.println(ticket.generarContenido());
-
-            System.out.println("Asientos disponibles tras la reserva: "
-                    + vuelo.getAsientosDisponibles());
-            System.out.println("Reservas del cliente: " + cliente.getCantidadReservas());
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            // Si falla, se usa el L&F por defecto. No es critico.
+            System.err.println("Aviso: no se pudo aplicar el Look and Feel del sistema.");
         }
 
-        System.out.println("\n=== Smoke test finalizado correctamente ===");
+        // 2) Asegurar que existe un administrador por defecto
+        crearAdminPorDefectoSiNoExiste();
+
+        // 3) Lanzar la GUI en el hilo de eventos de Swing
+        SwingUtilities.invokeLater(() -> {
+            VentanaPrincipal ventana = new VentanaPrincipal();
+            ventana.setVisible(true);
+        });
+    }
+
+    /**
+     * Si el repositorio no tiene ningun usuario, crea un Administrador por
+     * defecto. Esto garantiza que el sistema sea utilizable la primera vez
+     * que se ejecuta (de otro modo, no habria forma de acceder como admin).
+     */
+    private static void crearAdminPorDefectoSiNoExiste() {
+        RepositorioUsuarios repo = new RepositorioUsuarios();
+        if (repo.buscarPorId(Constantes.CORREO_ADMIN_DEFAULT) == null) {
+            Usuario admin = UsuarioFactory.crear(
+                    UsuarioFactory.Tipo.ADMINISTRADOR,
+                    "A001",
+                    "Administrador",
+                    "Sistema",
+                    Constantes.CORREO_ADMIN_DEFAULT,
+                    Constantes.CONTRASENA_ADMIN_DEFAULT);
+            repo.guardar(admin);
+            System.out.println("Administrador por defecto creado: "
+                    + Constantes.CORREO_ADMIN_DEFAULT
+                    + " / " + Constantes.CONTRASENA_ADMIN_DEFAULT);
+        }
     }
 }
