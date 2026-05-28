@@ -32,6 +32,9 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+# Sistema operativo
+.DS_Store
+Thumbs.db
 
 # ----------------------------------
 # Configuraciones de VS Code (Ernesto)
@@ -42,3 +45,6 @@ nbdist/
 .classpath
 .project
 .settings/
+
+# Datos generados en ejecucion (NO subir al repo)
+/data/
