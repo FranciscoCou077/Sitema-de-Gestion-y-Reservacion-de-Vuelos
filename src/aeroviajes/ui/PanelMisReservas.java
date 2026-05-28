@@ -16,8 +16,10 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  * Muestra el historial de reservas del cliente actual.
+ * Implementa PanelActualizable para recargar las reservas
+ * cada vez que se navega aqui (por ejemplo, justo despues de comprar).
  */
-public class PanelMisReservas extends JPanel {
+public class PanelMisReservas extends JPanel implements PanelActualizable {
 
     private final VentanaPrincipal ventana;
     private final GestorReservas gestorReservas;
@@ -39,7 +41,7 @@ public class PanelMisReservas extends JPanel {
         setLayout(new BorderLayout(10, 10));
         add(new JLabel("Mis reservas", JLabel.CENTER), BorderLayout.NORTH);
 
-        String[] columnas = {"ID Reserva", "Vuelo", "Origen", "Destino", "Fecha", "Asiento"};
+        String[] columnas = {"ID Reserva", "Vuelo", "Origen", "Destino", "Fecha", "Asiento", "Estado"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -52,12 +54,19 @@ public class PanelMisReservas extends JPanel {
 
         JPanel panelBotones = new JPanel();
         JButton btnVerTicket = new JButton("Ver ticket");
-        JButton btnRegresar = new JButton("Regresar");
+        JButton btnRegresar  = new JButton("Regresar");
+
         btnVerTicket.addActionListener(e -> verTicketSeleccionado());
         btnRegresar.addActionListener(e -> ventana.mostrarPanel(VentanaPrincipal.P_CLIENTE));
+
         panelBotones.add(btnVerTicket);
         panelBotones.add(btnRegresar);
         add(panelBotones, BorderLayout.SOUTH);
+    }
+
+    @Override
+    public void alMostrarse() {
+        cargarReservas();
     }
 
     public void cargarReservas() {
@@ -74,7 +83,8 @@ public class PanelMisReservas extends JPanel {
                 r.getVuelo().getOrigen().getCiudad(),
                 r.getVuelo().getDestino().getCiudad(),
                 r.getVuelo().getFechaFormateada(),
-                r.getAsientoAsignado()
+                r.getAsientoAsignado(),
+                r.getEstado()
             });
         }
     }
@@ -86,7 +96,7 @@ public class PanelMisReservas extends JPanel {
             return;
         }
         Reserva reserva = reservasActuales.get(fila);
-        panelTicket.mostrarReserva(reserva); // Le pasamos la reserva directamente
+        panelTicket.mostrarReserva(reserva);
         ventana.mostrarPanel("ticket");
     }
 }

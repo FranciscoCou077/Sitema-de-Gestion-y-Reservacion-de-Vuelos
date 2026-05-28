@@ -15,24 +15,26 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  * Muestra la tabla de vuelos disponibles.
- * El cliente puede seleccionar uno y pasar a la pantalla de compra.
+ * Al seleccionar uno, el cliente pasa al detalle del vuelo
+ * antes de proceder con la compra.
+ *
+ * Implementa PanelActualizable para recargar la lista
+ * cada vez que se navega aqui.
  */
-public class PanelListaVuelos extends JPanel {
+public class PanelListaVuelos extends JPanel implements PanelActualizable {
 
     private final VentanaPrincipal ventana;
     private final IGestorVuelos gestorVuelos;
-    private final PanelCompra panelCompra;
+    private final PanelDetalleVuelo panelDetalle;
 
     private JTable tablaVuelos;
     private DefaultTableModel modeloTabla;
-    private JButton btnComprar;
-    private JButton btnRegresar;
 
     public PanelListaVuelos(VentanaPrincipal ventana, IGestorVuelos gestorVuelos,
-                             PanelCompra panelCompra) {
+                             PanelDetalleVuelo panelDetalle) {
         this.ventana = ventana;
         this.gestorVuelos = gestorVuelos;
-        this.panelCompra = panelCompra;
+        this.panelDetalle = panelDetalle;
         initComponentes();
     }
 
@@ -40,7 +42,7 @@ public class PanelListaVuelos extends JPanel {
         setLayout(new BorderLayout(10, 10));
         add(new JLabel("Vuelos disponibles", JLabel.CENTER), BorderLayout.NORTH);
 
-        String[] columnas = {"ID", "Origen", "Destino", "Fecha", "Precio", "Asientos"};
+        String[] columnas = {"ID", "Aerolinea", "Origen", "Destino", "Fecha", "Precio", "Asientos"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -52,14 +54,19 @@ public class PanelListaVuelos extends JPanel {
         add(new JScrollPane(tablaVuelos), BorderLayout.CENTER);
 
         JPanel panelBotones = new JPanel();
-        btnComprar = new JButton("Comprar boleto");
-        btnRegresar = new JButton("Regresar");
-        btnComprar.addActionListener(e -> irACompra());
+        JButton btnDetalle  = new JButton("Ver detalle y comprar");
+        JButton btnRegresar = new JButton("Regresar");
+
+        btnDetalle.addActionListener(e -> irADetalle());
         btnRegresar.addActionListener(e -> ventana.mostrarPanel(VentanaPrincipal.P_CLIENTE));
-        panelBotones.add(btnComprar);
+
+        panelBotones.add(btnDetalle);
         panelBotones.add(btnRegresar);
         add(panelBotones, BorderLayout.SOUTH);
+    }
 
+    @Override
+    public void alMostrarse() {
         cargarVuelos();
     }
 
@@ -69,6 +76,7 @@ public class PanelListaVuelos extends JPanel {
         for (Vuelo v : vuelos) {
             modeloTabla.addRow(new Object[]{
                 v.getId(),
+                v.getAerolinea().getNombre(),
                 v.getOrigen().getCiudad(),
                 v.getDestino().getCiudad(),
                 v.getFechaFormateada(),
@@ -78,14 +86,14 @@ public class PanelListaVuelos extends JPanel {
         }
     }
 
-    private void irACompra() {
+    private void irADetalle() {
         int fila = tablaVuelos.getSelectedRow();
         if (fila == -1) {
             JOptionPane.showMessageDialog(this, "Por favor selecciona un vuelo primero.");
             return;
         }
         String idVuelo = (String) modeloTabla.getValueAt(fila, 0);
-        panelCompra.setIdVueloSeleccionado(idVuelo); // Le avisamos al panel de compra
-        ventana.mostrarPanel("compra");
+        panelDetalle.setIdVuelo(idVuelo);
+        ventana.mostrarPanel("detalleVuelo");
     }
 }
