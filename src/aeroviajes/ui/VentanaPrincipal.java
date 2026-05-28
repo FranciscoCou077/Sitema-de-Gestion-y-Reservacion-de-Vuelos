@@ -117,6 +117,9 @@ public class VentanaPrincipal extends JFrame {
         contenedor.add(new PanelLogin(this),      P_LOGIN);
         contenedor.add(new PanelRegistro(this), P_REGISTRO);
         contenedor.add(new PanelCliente(this),    P_CLIENTE);
+        contenedor.add(new PanelAdmin(this),                              "admin");
+        contenedor.add(new PanelGestionVuelos(this, gestorVuelosReal),        "gestionVuelos");
+        contenedor.add(new PanelGestionUsuarios(this, gestorUsuarios),    "gestionUsuarios");
         contenedor.add(panelLista,                P_LISTA_VUELOS);
         contenedor.add(panelDetalle,              P_DETALLE);
         contenedor.add(panelCompra,               P_COMPRA);

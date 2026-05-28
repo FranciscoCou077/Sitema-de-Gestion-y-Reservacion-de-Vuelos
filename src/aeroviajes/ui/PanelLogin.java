@@ -126,18 +126,11 @@ public class PanelLogin extends JPanel {
         limpiar();
 
         if ("ADMINISTRADOR".equals(u.getRol())) {
-            // El panel de administracion completo depende de la capa de servicio
-            // (GestorVuelosProxy de Ernesto). Por ahora mostramos un aviso y
-            // regresamos a la bienvenida.
-            ventana.info("Bienvenido administrador " + u.getNombreCompleto()
-                    + ".\nEl panel de administracion estara disponible cuando "
-                    + "se integre la capa de servicio.");
-            ventana.setUsuarioActual(null);
-            ventana.mostrarPanel(VentanaPrincipal.P_BIENVENIDA);
+            ventana.mostrarPanel("admin");
         } else {
-            ventana.mostrarPanel(VentanaPrincipal.P_CLIENTE);
+        ventana.mostrarPanel(VentanaPrincipal.P_CLIENTE);
         }
-    }
+    }        
 
     private void limpiar() {
         txtCorreo.setText("");
