@@ -48,3 +48,13 @@ Thumbs.db
 
 # Datos generados en ejecucion (NO subir al repo)
 /data/
+
+# Archivos auxiliares de LaTeX
+doc/*.aux
+doc/*.log
+doc/*.out
+doc/*.toc
+doc/*.synctex.gz
+doc/*.fdb_latexmk
+doc/*.fls
+
