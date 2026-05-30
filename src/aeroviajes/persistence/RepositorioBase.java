@@ -17,6 +17,7 @@ import java.util.List;
  * archivos y excepciones.
  *
  * @param <T> el tipo de entidad gestionada
+ * 
  * @author Equipo Aeroviajes
  */
 public abstract class RepositorioBase<T> implements IRepositorio<T> {

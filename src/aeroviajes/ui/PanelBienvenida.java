@@ -17,7 +17,7 @@ import javax.swing.SwingConstants;
  * Pantalla de bienvenida con el menu principal. Permite registrarse,
  * iniciar sesion como cliente o acceder como administrador.
  *
- * @author Equipo Aeroviajes
+ * @author Equipo Aeroviajes Francisco & Ernesto
  */
 public class PanelBienvenida extends JPanel {
 

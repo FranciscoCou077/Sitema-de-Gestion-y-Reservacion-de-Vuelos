@@ -6,7 +6,7 @@ package aeroviajes.ui;
 
 /**
  *
- * @author Francisco
+ * @author Francisco equipo aeroviajes Francisco & Ernesto
  */
 import aeroviajes.exception.UsuarioNoEncontrado;
 import aeroviajes.model.Usuario;

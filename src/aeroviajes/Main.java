@@ -73,7 +73,7 @@ public class Main {
     private static void crearVuelosDeMuestraSiNoExisten() {
         RepositorioVuelos repoV = new RepositorioVuelos();
         if (!repoV.listarTodos().isEmpty()) {
-            return; // ya hay vuelos persistidos, no resembrar
+            return; // ya hay vuelos persistidos
         }
 
         Aeropuerto mex = AeropuertoFlyweightFactory.obtener("MEX");

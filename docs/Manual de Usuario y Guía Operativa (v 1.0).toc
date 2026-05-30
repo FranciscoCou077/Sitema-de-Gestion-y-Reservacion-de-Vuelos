@@ -1,0 +1,16 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {section}{\numberline {1}Introducción}{2}{section.1}%
+\contentsline {section}{\numberline {2}Conceptos Clave del Sistema}{2}{section.2}%
+\contentsline {section}{\numberline {3}Inicio del Programa}{3}{section.3}%
+\contentsline {section}{\numberline {4}Guía de Operación: Cliente}{3}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Registro de una Cuenta Nueva}{4}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Iniciar Sesión como Cliente}{5}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Consulta y Compra de Vuelos}{7}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Consulta de Reservas y Descarga del Boleto}{10}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Guía de Operación: Administrador}{11}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Acceso al Panel de Administrador}{11}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Gestión de Vuelos}{13}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Gestión de Usuarios}{14}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Cierre Seguro del Programa}{15}{section.6}%
+\contentsline {section}{\numberline {7}Advertencias Críticas y Prevención de Fallos}{16}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Restricciones de Valores No Válidos}{17}{subsection.7.1}%

@@ -11,7 +11,7 @@ import java.util.Map;
  * (origen y destino). En lugar de crear un objeto Aeropuerto nuevo por cada
  * vuelo, esta fabrica mantiene una cache: si el aeropuerto ya existe lo
  * reutiliza, y si no, lo crea una sola vez y lo guarda. Asi todos los vuelos
- * que usan, por ejemplo, "MEX" comparten la MISMA instancia en memoria.
+ * que usan, como por ejemplo, "MEX" comparten la MISMA instancia en memoria.
  *
  * El estado intrinseco (codigo, nombre, ciudad, pais) vive en el flyweight
  * y es inmutable; el estado extrinseco (fecha, precio, asientos) vive en
